@@ -1,0 +1,113 @@
+<Mcml xmlns="http://schemas.microsoft.com/2006/mcml"
+      xmlns:cor="assembly://MsCorLib/System"
+	  xmlns:a="assembly://MediaBrowser/MediaBrowser"
+	  xmlns:i="resx://MediaBrowser/MediaBrowser.Resources/Images"
+	  xmlns:te="resx://MediaBrowser/MediaBrowser.Resources/TextEdit"
+	  xmlns:sb="resx://MediaBrowser/MediaBrowser.Resources/SimpleButton"
+      xmlns:sounds="resx://MediaBrowser/MediaBrowser.Resources/Sounds"
+    xmlns:me="Me"
+      >
+
+
+  <UI Name="ConnectLogin"> 
+    <Properties>
+      <a:Application Name="Application" Application="$Required"/>
+
+    </Properties>
+
+    <Locals>
+      <Command Name="Next" />
+      <Command Name="Cancel" />
+      <Command Name="ManualLogin" />
+      <EditableText Name="Address"/>
+      <EditableText Name="Port" Value="8096" />
+    </Locals>
+
+    <Rules>
+      <!--if not called by us (user used "back" to get to us) exit immediately-->
+      <Condition Source="[Application.NavigatingForward]" SourceValue="false">
+        <Actions>
+          <Invoke Target="[Application.BackOut]" />
+        </Actions>
+      </Condition>
+
+      
+      <Changed Source="[Next.Invoked]" >
+        <Actions>
+          <PlaySound Sound="sound://sounds:Miniselect" />
+          <Invoke Target="[Application.ConnectToServerAsync]" address="[Address.Value]" port="[Port.Value]" />
+        </Actions>
+        
+      </Changed>
+      <Changed Source="[Cancel.Invoked]" >
+        <Actions>
+          <Invoke Target="[Application.BackOut]" />
+        </Actions>
+      </Changed>
+    </Rules>
+
+    <Content>
+      <Graphic Name="Main" Content="resx://MediaBrowser/MediaBrowser.Resources/BackgroundBlack" Layout="Form" >
+        <Children>
+          <Graphic Name="Logo" Content="[Application.LogonSplashImage]" Margins="50,55,50,0" MaintainAspectRatio="true" MaximumSize="400, 100" CenterPointPercent=".5,.5,.5" >
+            <LayoutInput>
+              <FormLayoutInput Horizontal="Far" Vertical="Near" />
+            </LayoutInput>
+          </Graphic>
+
+          <Text Content="Welcome to Jellyfin for WMC" Font="Segoe UI Light, 48" Color="White" Margins="50,50,0,0" >
+            <LayoutInput>
+              <FormLayoutInput Horizontal="Near" Vertical="Near" />
+            </LayoutInput>
+          </Text>
+
+          <Text Name="FirstPara" Content="Jellyfin is the volunteer-built media solution that puts you in control of your media. It relies upon a server program that allows you access to your media." WordWrap="true" Font="Segoe UI Light, 18, Bold" Color="White" Margins="50,50,50,0" >
+            <LayoutInput>
+              <FormLayoutInput Horizontal="Near" Top="Parent, .2" />
+            </LayoutInput>
+          </Text>
+
+          <Text Name="SecondPara" Content="If you don't have an Jellyfin server on your network but someone has shared theirs with you, you can access it by entering it's web address in the box below." WordWrap="true" Font="Segoe UI Light, 18, Bold" Color="White" Margins="50,10,50,0" >
+            <LayoutInput>
+              <FormLayoutInput Horizontal="Near" Top="FirstPara, 1" />
+            </LayoutInput>
+          </Text>
+
+          <Text Name="ThirdPara" Content="If you don't have access to an Jellyfin Server, you can install one by going to https://jellyfin.org." WordWrap="true" Font="Segoe UI Light, 18, Bold" Color="White" Margins="50,20,50,50" >
+            <LayoutInput>
+              <FormLayoutInput Horizontal="Near" Top="SecondPara, 1" />
+            </LayoutInput>
+          </Text>
+
+          <Panel Name="ButtonPanel" Layout="HorizontalFlow" Margins="0,0,50,30" >
+            <LayoutInput>
+              <FormLayoutInput Horizontal="Far" Vertical="Far" />
+            </LayoutInput>
+            <Children>
+              <sb:SimpleButton Name="NextBtn" Text="Next" Command="[Next]" Visible="true" Size="250,50" Font="Segoe Media Center Light, 20, Bold"/>
+              <sb:SimpleButton Name="CancelBtn" Text="Cancel"  Command="[Cancel]" Visible="true" Size="225,50" Font="Segoe Media Center Light, 20, Bold"/>
+
+            </Children>
+          </Panel>
+
+
+          <Panel Name="ManualLoginPanel" Layout="HorizontalFlow" Visible="true"  >
+            <LayoutInput>
+              <FormLayoutInput Left="Parent, 0, 120" Bottom="Parent,1,-30"/>
+            </LayoutInput>
+            <Children>
+              <te:TextEdit Label="Address" EditableText="[Address]" MaximumSize="300,0" EditSize="200,34" 
+                           Font="Segoe Media Center Light, 16, Bold" MaxChars="60" />
+              <te:TextEdit Label="Port" EditableText="[Port]" MaximumSize="200,0" EditSize="100,34" 
+                           Font="Segoe Media Center Light, 16, Bold" MaxChars="8" />
+            </Children>
+          </Panel>
+
+        </Children>
+      </Graphic>
+    </Content>
+  </UI>
+
+
+
+</Mcml>

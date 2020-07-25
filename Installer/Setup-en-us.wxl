@@ -1,0 +1,25 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<WixLocalization Culture="en-us" xmlns="http://schemas.microsoft.com/wix/2006/localization">
+
+	<String Id="LaunchCondition_AdminPrivs">You must have Administrative rights on this machine to install [ProductName].</String>
+	<String Id="LaunchCondition_NewerVersion">A newer version of [ProductName] is already installed.</String>
+	<String Id="LaunchCondition_WrongOSVersion">[ProductName] can only be installed on Microsoft Windows 7 or 8 with Media Center also installed.</String>
+  <String Id="LaunchCondition_WrongDotNetFramework">[ProductName] requires that .NET Framework version 3.5 or above is installed.</String>
+
+	<String Id="Property_ArpHelpLink">https://gitlab.com/samicrusader/MediaBrowser.Classic</String>
+	<String Id="Property_ArpUrlInfoAbout">https://gitlab.com/samicrusader/MediaBrowser.Classic</String>
+  <String Id="Property_ArpUrlUpdateInfo">https://gitlab.com/samicrusader/MediaBrowser.Classic</String>
+	<String Id="Property_ProductLanguage">1033</String>
+	<String Id="Property_ProductName">Jellyfin for WMC</String>
+	<String Id="Property_CompanyName">samicrusader</String>
+
+	<String Id="Package_Description">Jellyfin for Windows Media Center</String>
+	<String Id="Package_Comments">This Installer database contains the logic and data required to install Jellyfin for WMC.</String>
+
+  <String Id="Dialog_CreateDesktopShortcut">Create a shortcut for Jellyfin for WMC on the desktop.</String>
+  <String Id="Dialog_CreateStartMenuShortcut">Create a shortcut for Jellyfin for WMC in the start menu.</String>
+  <String Id="Dialog_OptionalLaunchAtStartup">Optionally, you can automatically launch the applications at logon:</String>
+  <String Id="Dialog_CreateMediaBrowserStartupShortcut">Launch Jellyfin for WMC automatically at log on.</String>
+  <String Id="Dialog_MakeDonation"></String>
+  <String Id="Dialog_DonationUrl">https://gitlab.com/samicrusader/MediaBrowser.Classic</String>
+</WixLocalization>

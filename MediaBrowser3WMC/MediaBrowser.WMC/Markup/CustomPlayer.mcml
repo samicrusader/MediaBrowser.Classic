@@ -1,0 +1,998 @@
+<Mcml xmlns="http://schemas.microsoft.com/2006/mcml"
+    xmlns:cor="assembly://MsCorLib/System"
+    xmlns:mcui="assembly://Microsoft/Microsoft.MediaCenter.UI/Microsoft.MediaCenter.UI"
+	  xmlns:a="assembly://MediaBrowser/MediaBrowser"
+    xmlns:lib="assembly://MediaBrowser/MediaBrowser.Library"
+		xmlns:pd="resx://MediaBrowser/MediaBrowser.Resources/PageDefault"
+    xmlns:i="resx://MediaBrowser/MediaBrowser.Resources/Images"
+    xmlns:an="resx://MediaBrowser/MediaBrowser.Resources/Animations"      
+    xmlns:ss="resx://MediaBrowser/MediaBrowser.Resources/DefaultSS"      
+    xmlns:em="resx://MediaBrowser/MediaBrowser.Resources/ExitMenu"      
+    xmlns:msg="resx://MediaBrowser/MediaBrowser.Resources/Message"      
+      xmlns:po="resx://MediaBrowser/MediaBrowser.Resources/SingleItemPopout"
+      xmlns:sounds="resx://MediaBrowser/MediaBrowser.Resources/Sounds"
+      xmlns:search="resx://MediaBrowser/MediaBrowser.Resources/SearchPane"
+      xmlns:cm="resx://MediaBrowser/MediaBrowser.Resources/ContextMenu"
+      xmlns:mp="resx://MediaBrowser/MediaBrowser.Resources/MPAARating"
+    xmlns:sr="resx://MediaBrowser/MediaBrowser.Resources/StarRating"
+    xmlns:si="resx://MediaBrowser/MediaBrowser.Resources/StudioImages"
+    xmlns:sb="resx://MediaBrowser/MediaBrowser.Resources/SeekBar"
+	    xmlns:ib="resx://MediaBrowser/MediaBrowser.Resources/IconButton"
+    xmlns:dum="resx://MediaBrowser/MediaBrowser.Resources/DummyItem"
+      xmlns:mpo="resx://MediaBrowser/MediaBrowser.Resources/MessagePopout"
+    xmlns:me="Me"
+    >
+
+  <UI Name="CustomPlayer">
+    <Properties>
+      <a:Application Name="Application" Application="$Required"/>
+      <Command Name="NextInQueue" />
+      <Command Name="ShowInfo" />
+    </Properties>
+
+    <Locals>
+      <KeyHandler Name="TopShortcut" Handle="true" Key="H" Modifiers="Control" HandlerStage="Bubbled"/>
+      <ShortcutHandler Name="Back" Handle="true" HandlerStage="Bubbled" Shortcut="Back"/>
+      <ShortcutHandler Name="Skip" Handle="true" HandlerStage="Bubbled" Shortcut="SkipForward"/>
+      <ShortcutHandler Name="SkipBack" Handle="true" HandlerStage="Bubbled" Shortcut="SkipBack"/>
+      <ShortcutHandler Name="ChannelUp" Handle="true" HandlerStage="Bubbled" Shortcut="ChannelUp" />
+      <ShortcutHandler Name="ChannelDown" Handle="true" HandlerStage="Bubbled" Shortcut="ChannelDown" />
+      <ShortcutHandler Name="FF" Handle="true" HandlerStage="Bubbled" Shortcut="FastForward"/>
+      <ShortcutHandler Name="Rew" Handle="true" HandlerStage="Bubbled" Shortcut="Rewind" />
+      <ShortcutHandler Name="Pause" Handle="false" HandlerStage="Bubbled" Shortcut="Pause"/>
+      <ShortcutHandler Name="Play" Handle="false" HandlerStage="Bubbled" Shortcut="Play" />
+      <ShortcutHandler Name="PlayPause" Handle="false" HandlerStage="Bubbled" Shortcut="PlayPause" />
+      <KeyHandler Name="Right"  Handle="false" HandlerStage="Routed" Key="Right" />
+      <KeyHandler Name="Left" Handle="false" HandlerStage="Routed" Key="Left" />
+      <KeyHandler Name="Up" Handle="false" HandlerStage="Routed" Key="Up" />
+      <KeyHandler Name="Down" Handle="false" HandlerStage="Routed" Key="Down" />
+      <KeyHandler Name="Period" Key="Period" Handle="true" HandlerStage="Bubbled"/>
+      <KeyHandler Name="ZoomToggle" Key="Z" Handle="true" Modifiers="Control,Shift" HandlerStage="Bubbled"/>
+      <KeyHandler Name="SkipBackKey" Key="B" Handle="true" Modifiers="Control,Shift" HandlerStage="Bubbled"/>
+      <KeyHandler Name="SkipForwardKey" Key="F" Handle="true" Modifiers="Control,Shift" HandlerStage="Bubbled"/>
+
+      <ClickHandler Name="Clicker" HandlerStage="Bubbled" HandleEnterSpaceKeys="false"/>
+
+      <Timer Name="MsgDelay" AutoRepeat="false" Interval="150" Enabled="false"/>
+      <Command Name="CloseMessage"/>
+
+
+      <lib:Item Name="Item" Item="[Application.CurrentlyPlayingItem]" />
+      <a:Clock Name="Clock"/>
+
+      <Timer Name="NavTimer" AutoRepeat="false" Interval="500" Enabled="true"/>
+      <cor:Boolean Name="ShowOverlay" />
+
+      <Timer Name="HideDirectSkip" Interval="3000" AutoRepeat="false"/>
+      <!-- Use specific key handlers instead of typing handler so we can do different things with different types of entry-->
+      <EditableText Name="InputHolder" Value=""/>
+      <KeyHandler Name="0" Key="D0" Handle="true" HandlerStage="Bubbled"/>
+      <KeyHandler Name="1" Key="D1" Handle="true" HandlerStage="Bubbled"/>
+      <KeyHandler Name="2" Key="D2" Handle="true" HandlerStage="Bubbled"/>
+      <KeyHandler Name="3" Key="D3" Handle="true" HandlerStage="Bubbled"/>
+      <KeyHandler Name="4" Key="D4" Handle="true" HandlerStage="Bubbled"/>
+      <KeyHandler Name="5" Key="D5" Handle="true" HandlerStage="Bubbled"/>
+      <KeyHandler Name="6" Key="D6" Handle="true" HandlerStage="Bubbled"/>
+      <KeyHandler Name="7" Key="D7" Handle="true" HandlerStage="Bubbled"/>
+      <KeyHandler Name="8" Key="D8" Handle="true" HandlerStage="Bubbled"/>
+      <KeyHandler Name="9" Key="D9" Handle="true" HandlerStage="Bubbled"/>
+      <KeyHandler Name="Num0" Key="NumPad0" Handle="true" HandlerStage="Bubbled"/>
+      <KeyHandler Name="Num1" Key="NumPad1" Handle="true" HandlerStage="Bubbled"/>
+      <KeyHandler Name="Num2" Key="NumPad2" Handle="true" HandlerStage="Bubbled"/>
+      <KeyHandler Name="Num3" Key="NumPad3" Handle="true" HandlerStage="Bubbled"/>
+      <KeyHandler Name="Num4" Key="NumPad4" Handle="true" HandlerStage="Bubbled"/>
+      <KeyHandler Name="Num5" Key="NumPad5" Handle="true" HandlerStage="Bubbled"/>
+      <KeyHandler Name="Num6" Key="NumPad6" Handle="true" HandlerStage="Bubbled"/>
+      <KeyHandler Name="Num7" Key="NumPad7" Handle="true" HandlerStage="Bubbled"/>
+      <KeyHandler Name="Num8" Key="NumPad8" Handle="true" HandlerStage="Bubbled"/>
+      <KeyHandler Name="Num9" Key="NumPad9" Handle="true" HandlerStage="Bubbled"/>
+
+      <KeyHandler Name="Space" Key="Space" Handle="true" HandlerStage="Bubbled"/>
+      <KeyHandler Name="NextItem" Key="N" Handle="true" Modifiers="Control,Shift" HandlerStage="Bubbled" Command="[NextInQueue]"/>
+      <KeyHandler Name="InfoButton" Key="I" Handle="true" Modifiers="Control,Shift" HandlerStage="Bubbled" Command="[ShowInfo]"/>
+
+    </Locals>
+
+    <Rules>
+
+      <Default Target="[Input.KeyInteractive]" Value="true" />
+      <!--This will show the overlay when we first come up-->
+      <Changed Source="[Application]" InitialEvaluate="true" >
+        <Conditions>
+          <Equality Source="[Application.SuppressInitialOverlay]" Value="false" />
+        </Conditions>
+        <Actions>
+          <Set Target="[Application.RecentUserInput]" Value="true" />
+        </Actions>
+      </Changed>
+      
+      <Binding Source="[Application.ShowNewItemPopout]" Target="[NewItemPopout.Visible]" >
+        <Conditions>
+          <Equality Source="[Application.Config.ShowNewItemNotificationInPlayer]" Value="true" />
+        </Conditions>
+      </Binding>
+      <Binding Source="[Application.NewItem]" Target="[NewItemPopout.Item]" />
+      <Binding Source="[Application.CurrentlyPlayingItem]" Target="[Item]" />
+
+      <Binding Source="[Clock.Time]" Target="[Time.Content]" />
+
+      <Binding Source="[Application.PlaybackController.IsPaused]" Target="[PausedPanel.Visible]" >
+        <Conditions>
+          <Equality Source="[Application.Config.ShowPauseIndicator]" Value="true" />
+        </Conditions>
+      </Binding>
+
+      <Binding Source="[Application.ShowMessagePopout]" Target="[MessagePopout.Visible]" />
+      <Binding Source="[Application.MessageText]" Target="[MessagePopout.Message]" />
+      <Binding Source="[Application.MessageTitle]" Target="[MessagePopout.Heading]" />
+
+      <Changed Source="[Back.Invoked]" >
+        <Conditions>
+          <Equality Source="[ShowOverlay]" Value="false" />
+        </Conditions>
+        <Actions>
+          <PlaySound Sound="sound://sounds:Select" />
+          <Invoke Target="[Application.Back]" />
+        </Actions>
+      </Changed>
+
+      <Changed Source="[Back.Invoked]" >
+        <Conditions>
+          <Equality Source="[ShowOverlay]" Value="true" />
+        </Conditions>
+        <Actions>
+          <Set Target="[Application.RecentUserInput]" Value="false" />
+        </Actions>
+      </Changed>
+
+      <Changed Source="[TopShortcut.Invoked]">
+        <Actions>
+          <Invoke Target="[Application.BackToRoot]"/>
+          <PlaySound Sound="sound://sounds:Miniselect" />
+        </Actions>
+      </Changed>
+
+      <Changed Source="[ZoomToggle.Invoked]">
+        <Actions>
+          <Invoke Target="[Application.PlaybackController.ToggleZoomMode]"/>
+          <PlaySound Sound="sound://sounds:Miniselect" />
+        </Actions>
+      </Changed>
+
+      <!--Trap only keys we care about-->
+      <Rule ConditionLogicalOp="Or">
+        <Conditions>
+          <Modified Source="[Play.Invoked]"/>
+          <Modified Source="[Pause.Invoked]"/>
+          <Modified Source="[PlayPause.Invoked]"/>
+          <Modified Source="[ChannelUp.Invoked]"/>
+          <Modified Source="[ChannelDown.Invoked]"/>
+          <Modified Source="[Right.Invoked]"/>
+          <Modified Source="[Left.Invoked]"/>
+          <Modified Source="[Up.Invoked]"/>
+          <Modified Source="[Down.Invoked]"/>
+          <Modified Source="[InfoButton.Invoked]"/>
+        </Conditions>
+        <Actions>
+          <Set Target="[Application.RecentUserInput]" Value="true" />
+        </Actions>
+      </Rule>
+
+      <Changed Source="[Clicker.Invoked]" >
+        <Actions>
+          <Invoke Target="[Application.PlaybackController.TogglePause]" />
+        </Actions>
+      </Changed>
+      
+      <Changed Source="[Play.Invoked]">
+        <Conditions>
+          <Equality Source="[InputHolder.Value]" ConditionOp="NotEquals" Value="" />
+        </Conditions>
+        <Actions>
+          <PlaySound Sound="sound://sounds:Select" />
+          <Invoke Target="[Application.PlaybackController.DirectSeek]" value="[InputHolder.Value]" />
+        </Actions>
+      </Changed>
+
+      <Changed Source="[Skip.Invoked]">
+        <Actions>
+          <PlaySound Sound="sound://sounds:Select" />
+          <Invoke Target="[Application.PlaybackController.SkipAhead]" value="[InputHolder.Value]" />
+        </Actions>
+      </Changed>
+
+      <Changed Source="[SkipForwardKey.Invoked]">
+        <Actions>
+          <PlaySound Sound="sound://sounds:Select" />
+          <Invoke Target="[Application.PlaybackController.SkipAhead]" value="[InputHolder.Value]" />
+        </Actions>
+      </Changed>
+
+      <Changed Source="[SkipBack.Invoked]">
+        <Actions>
+          <PlaySound Sound="sound://sounds:Select" />
+          <Invoke Target="[Application.PlaybackController.SkipBack]" value="[InputHolder.Value]" />
+        </Actions>
+      </Changed>
+
+      <Changed Source="[SkipBackKey.Invoked]">
+        <Actions>
+          <PlaySound Sound="sound://sounds:Select" />
+          <Invoke Target="[Application.PlaybackController.SkipBack]" value="[InputHolder.Value]" />
+        </Actions>
+      </Changed>
+
+      <Changed Source="[ChannelUp.Invoked]">
+        <Actions>
+          <PlaySound Sound="sound://sounds:Select" />
+          <Set Target="[Application.RecentUserInput]" Value="true" />
+          <Invoke Target="[Item.SetNextChapterSeekIndex]" />
+        </Actions>
+      </Changed>
+
+      <Changed Source="[ChannelDown.Invoked]">
+        <Actions>
+          <PlaySound Sound="sound://sounds:Select" />
+          <Set Target="[Application.RecentUserInput]" Value="true" />
+          <Invoke Target="[Item.SetPrevChapterSeekIndex]" />
+        </Actions>
+      </Changed>
+
+      <Changed Source="[FF.Invoked]">
+        <Conditions>
+          <Equality Source="[Application.Config.DisableMcConflictingOperations]" Value="false" />
+          <Equality Source="[InputHolder.Value]" Value="" />
+        </Conditions>
+        <Actions>
+          <PlaySound Sound="sound://sounds:Select" />
+          <Set Target="[Application.RecentUserInput]" Value="true" />
+          <Invoke Target="[Application.PlaybackController.FastForward]" />
+        </Actions>
+      </Changed>
+
+      <Changed Source="[FF.Invoked]">
+        <Conditions>
+          <Equality Source="[Application.Config.DisableMcConflictingOperations]" Value="false" />
+          <Equality Source="[InputHolder.Value]" ConditionOp="NotEquals" Value="" />
+        </Conditions>
+        <Actions>
+          <PlaySound Sound="sound://sounds:Select" />
+          <Set Target="[Application.RecentUserInput]" Value="true" />
+          <Invoke Target="[Application.PlaybackController.SkipAhead]" value="[InputHolder.Value]" />
+        </Actions>
+      </Changed>
+
+      <Changed Source="[Rew.Invoked]">
+        <Conditions>
+          <Equality Source="[Application.Config.DisableMcConflictingOperations]" Value="false" />
+          <Equality Source="[InputHolder.Value]" ConditionOp="NotEquals" Value="" />
+        </Conditions>
+        <Actions>
+          <PlaySound Sound="sound://sounds:Select" />
+          <Set Target="[Application.RecentUserInput]" Value="true" />
+          <Invoke Target="[Application.PlaybackController.SkipBack]" value="[InputHolder.Value]" />
+        </Actions>
+      </Changed>
+
+      <Changed Source="[Rew.Invoked]">
+        <Conditions>
+          <Equality Source="[Application.Config.DisableMcConflictingOperations]" Value="false" />
+          <Equality Source="[InputHolder.Value]" Value="" />
+        </Conditions>
+        <Actions>
+          <PlaySound Sound="sound://sounds:Select" />
+          <Set Target="[Application.RecentUserInput]" Value="true" />
+          <Invoke Target="[Application.PlaybackController.Rewind]" />
+        </Actions>
+      </Changed>
+
+      <Changed Source="[Space.Invoked]">
+        <Actions>
+          <Set Target="[Application.RecentUserInput]" Value="true" />
+          <Invoke Target="[Application.PlaybackController.TogglePause]" />
+        </Actions>
+      </Changed>
+
+      <Binding Source="[Application.RecentUserInput]" Target="[ShowOverlay]" />
+      <Binding Source="[ShowOverlay]" Target="[TopPanel.Visible]" />
+      <Binding Source="[ShowOverlay]" Target="[BottomPanel.Visible]" />
+
+      <Binding Target="[MPAARating.Value]" Source="[Item.MpaaRating]"></Binding>
+      <Binding Target="[StarRating.Value]" Source="[Item.ImdbRating]"></Binding>
+      <Binding Target="[CriticScore.Content]" Source="[Item.CriticRatingString]" />
+      <Binding Target="[Year.Content]" Source="[Item.FirstAired]" />
+      <Binding Target="[RTIcon.Content]" Source="[Item.RottenTomatoImage]" />
+      <Binding Target="[Runtime.Content]" Source="[Item.RunningTimeString]"></Binding>
+      <Binding Target="[SeekBar.Item]" Source="[Item]" />
+      <Binding Target="[Title.Content]" Source="[Item.LongName]" />
+      <Binding Source="[Item.LogoImage]" Target="[LogoImage.Content]" />
+      <Binding Source="[Item.Overview]" Target="[Overview.Content]" />
+      <Binding Source="[Item.CurrentEndTimeString]" Target="[EndTime.Content]" />
+      
+      <!--Zoom Levels-->
+      <Binding Source="[Application.PlaybackController.Zoom]" Target="[MainVideo.Scale]" />
+      
+      <Rule>
+        <Conditions>
+          <Equality Source="[Item.HDType]" ConditionOp="Equals" Value="1080" />
+        </Conditions>
+        <Actions>
+          <Set Target="[HDType.Visible]" Value="true" />
+          <Set Target="[HDType.Content]" Value="image://i:Icon1080" />
+        </Actions>
+      </Rule>
+      <Rule>
+        <Conditions>
+          <Equality Source="[Item.HDType]" ConditionOp="Equals" Value="720" />
+        </Conditions>
+        <Actions>
+          <Set Target="[HDType.Visible]" Value="true" />
+          <Set Target="[HDType.Content]" Value="image://i:Icon720" />
+        </Actions>
+      </Rule>
+      <Binding Source="[Item.PreferredImage]" Target="[PosterImage.Content]" >
+        <Conditions>
+          <Equality Source="[Item.ItemTypeString]" ConditionOp="NotEquals" Value="Episode" />
+        </Conditions>
+      </Binding>
+      <Binding Source="[Item.Series.PrimaryImage]" Target="[PosterImage.Content]" >
+        <Conditions>
+          <Equality Source="[Application.CurrentlyPlayingItem.ItemTypeString]" Value="Episode" />
+        </Conditions>
+      </Binding>
+
+      <Binding Target="[StudioRepeater.Source]"    Source="[Item.StudioItems]">
+        <Conditions>
+          <Equality Source="[Item.ItemTypeString]" ConditionOp="NotEquals" Value="Episode"/>
+        </Conditions>
+      </Binding>
+      <Binding Target="[StudioRepeater.Source]"    Source="[Item.Series.StudioItems]">
+        <Conditions>
+          <Equality Source="[Item.ItemTypeString]" Value="Episode"/>
+        </Conditions>
+      </Binding>
+
+      <!--Chapter Info-->
+      <Binding Source="[Item.ShowChapterImage]" Target="[ChapterInfo.Visible]" />
+      <Binding Source="[Item.CurrentDisplayChapter]" Target="[ChapterInfo.Chapter]" />
+
+      <!--Direct Skip-->
+      <Binding Source="[InputHolder.Value]" Target="[DirectSkip.Content]" />
+      <Changed Source="[Period.Invoked]">
+        <Actions>
+          <Set Target="[DirectSkipPanel.Visible]" Value="true" />
+          <Invoke Target="[HideDirectSkip.Start]" />
+          <Invoke Target="[InputHolder.Value.Concat]" ResultTarget="[InputHolder.Value]" str0="[InputHolder.Value]" str1="." />
+          <Set Target="[Application.RecentUserInput]" Value="true" />
+        </Actions>
+      </Changed>
+      <Rule ConditionLogicalOp="Or">
+        <Conditions>
+          <Modified Source="[0.Invoked]" />
+          <Modified Source="[Num0.Invoked]" />
+        </Conditions>
+        <Actions>
+          <Set Target="[DirectSkipPanel.Visible]" Value="true" />
+          <Invoke Target="[HideDirectSkip.Start]" />
+          <Invoke Target="[InputHolder.Value.Concat]" ResultTarget="[InputHolder.Value]" str0="[InputHolder.Value]" str1="0" />
+          <Set Target="[Application.RecentUserInput]" Value="true" />
+        </Actions>
+      </Rule>
+      <Rule ConditionLogicalOp="Or">
+        <Conditions>
+          <Modified Source="[1.Invoked]" />
+          <Modified Source="[Num1.Invoked]" />
+        </Conditions>
+        <Actions>
+          <Set Target="[DirectSkipPanel.Visible]" Value="true" />
+          <Invoke Target="[HideDirectSkip.Start]" />
+          <Invoke Target="[InputHolder.Value.Concat]" ResultTarget="[InputHolder.Value]" str0="[InputHolder.Value]" str1="1" />
+          <Set Target="[Application.RecentUserInput]" Value="true" />
+        </Actions>
+      </Rule>
+      <Rule ConditionLogicalOp="Or">
+        <Conditions>
+          <Modified Source="[2.Invoked]" />
+          <Modified Source="[Num2.Invoked]" />
+        </Conditions>
+        <Actions>
+          <Set Target="[DirectSkipPanel.Visible]" Value="true" />
+          <Invoke Target="[HideDirectSkip.Start]" />
+          <Invoke Target="[InputHolder.Value.Concat]" ResultTarget="[InputHolder.Value]" str0="[InputHolder.Value]" str1="2" />
+          <Set Target="[Application.RecentUserInput]" Value="true" />
+        </Actions>
+      </Rule>
+      <Rule ConditionLogicalOp="Or">
+        <Conditions>
+          <Modified Source="[3.Invoked]" />
+          <Modified Source="[Num3.Invoked]" />
+        </Conditions>
+        <Actions>
+          <Set Target="[DirectSkipPanel.Visible]" Value="true" />
+          <Invoke Target="[HideDirectSkip.Start]" />
+          <Invoke Target="[InputHolder.Value.Concat]" ResultTarget="[InputHolder.Value]" str0="[InputHolder.Value]" str1="3" />
+          <Set Target="[Application.RecentUserInput]" Value="true" />
+        </Actions>
+      </Rule>
+      <Rule ConditionLogicalOp="Or">
+        <Conditions>
+          <Modified Source="[4.Invoked]" />
+          <Modified Source="[Num4.Invoked]" />
+        </Conditions>
+        <Actions>
+          <Set Target="[DirectSkipPanel.Visible]" Value="true" />
+          <Invoke Target="[HideDirectSkip.Start]" />
+          <Invoke Target="[InputHolder.Value.Concat]" ResultTarget="[InputHolder.Value]" str0="[InputHolder.Value]" str1="4" />
+          <Set Target="[Application.RecentUserInput]" Value="true" />
+        </Actions>
+      </Rule>
+      <Rule ConditionLogicalOp="Or">
+        <Conditions>
+          <Modified Source="[5.Invoked]" />
+          <Modified Source="[Num5.Invoked]" />
+        </Conditions>
+        <Actions>
+          <Set Target="[DirectSkipPanel.Visible]" Value="true" />
+          <Invoke Target="[HideDirectSkip.Start]" />
+          <Invoke Target="[InputHolder.Value.Concat]" ResultTarget="[InputHolder.Value]" str0="[InputHolder.Value]" str1="5" />
+          <Set Target="[Application.RecentUserInput]" Value="true" />
+        </Actions>
+      </Rule>
+      <Rule ConditionLogicalOp="Or">
+        <Conditions>
+          <Modified Source="[6.Invoked]" />
+          <Modified Source="[Num6.Invoked]" />
+        </Conditions>
+        <Actions>
+          <Set Target="[DirectSkipPanel.Visible]" Value="true" />
+          <Invoke Target="[HideDirectSkip.Start]" />
+          <Invoke Target="[InputHolder.Value.Concat]" ResultTarget="[InputHolder.Value]" str0="[InputHolder.Value]" str1="6" />
+          <Set Target="[Application.RecentUserInput]" Value="true" />
+        </Actions>
+      </Rule>
+      <Rule ConditionLogicalOp="Or">
+        <Conditions>
+          <Modified Source="[7.Invoked]" />
+          <Modified Source="[Num7.Invoked]" />
+        </Conditions>
+        <Actions>
+          <Set Target="[DirectSkipPanel.Visible]" Value="true" />
+          <Invoke Target="[HideDirectSkip.Start]" />
+          <Invoke Target="[InputHolder.Value.Concat]" ResultTarget="[InputHolder.Value]" str0="[InputHolder.Value]" str1="7" />
+          <Set Target="[Application.RecentUserInput]" Value="true" />
+        </Actions>
+      </Rule>
+      <Rule ConditionLogicalOp="Or">
+        <Conditions>
+          <Modified Source="[8.Invoked]" />
+          <Modified Source="[Num8.Invoked]" />
+        </Conditions>
+        <Actions>
+          <Set Target="[DirectSkipPanel.Visible]" Value="true" />
+          <Invoke Target="[HideDirectSkip.Start]" />
+          <Invoke Target="[InputHolder.Value.Concat]" ResultTarget="[InputHolder.Value]" str0="[InputHolder.Value]" str1="8" />
+          <Set Target="[Application.RecentUserInput]" Value="true" />
+        </Actions>
+      </Rule>
+      <Rule ConditionLogicalOp="Or">
+        <Conditions>
+          <Modified Source="[9.Invoked]" />
+          <Modified Source="[Num9.Invoked]" />
+        </Conditions>
+        <Actions>
+          <Set Target="[DirectSkipPanel.Visible]" Value="true" />
+          <Invoke Target="[HideDirectSkip.Start]" />
+          <Invoke Target="[InputHolder.Value.Concat]" ResultTarget="[InputHolder.Value]" str0="[InputHolder.Value]" str1="9" />
+          <Set Target="[Application.RecentUserInput]" Value="true" />
+        </Actions>
+      </Rule>
+      
+      <Changed Source="[HideDirectSkip.Tick]">
+        <Actions>
+          <Set Target="[InputHolder.Value]" Value="" />
+          <Set Target="[DirectSkipPanel.Visible]" Value="false" />
+        </Actions>
+      </Changed>
+
+      <!--End Direct Skip-->
+
+
+      <Binding Source="[Application.MessageText]" Target="[MessageBox.Msg]" />
+      <Binding Source="[Application.MessageUI]" Target="[MessageBox.Source]" />
+      <Changed Source="[CloseMessage.Invoked]">
+        <Actions>
+          <Set Target="[Application.ShowMessage]" Value="false" />
+        </Actions>
+      </Changed>
+      
+      <!--Back out when video stops-->
+      <Condition Source="[Application.ShowNowPlaying]" SourceValue="false" >
+        <Actions>
+          <Invoke Target="[Application.Back]" />
+        </Actions>
+      </Condition>
+
+      <Changed Source="[Application.ShowMessage]" InitialEvaluate="true" >
+        <Conditions>
+          <Equality Source="[Application.ShowMessage]" ConditionOp="Equals" Value="true" />
+        </Conditions>
+        <Actions>
+          <PlaySound Sound="sound://sounds:Miniselect" />
+          <Invoke Target="[MsgDelay.Start]" />
+          <Set Target="[MouseBlocker.Visible]" Value="true" />
+          <Set Target="[MessageBox.Visible]" Value="true" />
+        </Actions>
+      </Changed>
+      <Changed Source="[MsgDelay.Tick]" >
+        <Actions>
+          <Invoke Target="[MessageBox.NavigateInto]" />
+        </Actions>
+      </Changed>
+      <Changed Source="[Application.ShowMessage]">
+        <Conditions>
+          <Equality Source="[Application.ShowMessage]" ConditionOp="Equals" Value="false" />
+        </Conditions>
+        <Actions>
+          <Set Target="[MessageBox.Visible]" Value="false" />
+          <Set Target="[MouseBlocker.Visible]" Value="false" />
+        </Actions>
+      </Changed>
+      
+      <Changed Source="[NavTimer.Tick]">
+        <Actions>
+          <Invoke Target="[Dummy.NavigateInto]" />
+        </Actions>
+      </Changed>
+
+      <Changed Source="[NextInQueue.Invoked]">
+        <Actions>
+          <Invoke Target="[Application.PlaybackController.SkipToNextInCollection]" />
+        </Actions>
+      </Changed>
+
+      <Changed Source="[ShowInfo.Invoked]">
+        <Actions>
+          <Set Target="[OverviewPanel.Visible]" Value="[OverviewPanel.Visible]" >
+            <Transformer>
+              <BooleanTransformer Inverse="true" />
+            </Transformer>
+          </Set>
+        </Actions>
+      </Changed>
+
+      <Default Target="[ScreenSaver.Source]" Value="[Application.CurrentScreenSaver]" >
+        <Conditions>
+          <Equality Source="[Application.CurrentScreenSaver]" ConditionOp="NotEquals" Value="" />
+        </Conditions>
+      </Default>
+      <Changed Source="[Application.PlaybackController.CurrentMediaCollection.CurrentIndex]" InitialEvaluate="true">
+        <Conditions>
+          <IsValid Source="[Application.PlaybackController.CurrentMediaCollection]" />
+          <Equality Source="[Application.PlaybackController.CurrentMediaCollection.Count]" ConditionOp="GreaterThan" Value="1" />
+        </Conditions>
+        <Actions>
+          <Set Target="[MultiInfo.Visible]" Value="true" />
+          <Set Target="[MultiNext.Visible]" Value="[Application.PlaybackController.CanSkipInCollection]" />
+          <Set Target="[MultiCurrent.Content]" Value="[Application.PlaybackController.CurrentCollectionIndex.ToString]" />
+          <Set Target="[MultiTotal.Content]" Value="[Application.PlaybackController.CurrentMediaCollection.Count.ToString]" />
+        </Actions>
+      </Changed>
+
+      <Default Target="[MultiInfo.Visible]" Value="false" />
+
+      <Binding Source="[Application.ScreenSaverActive]" Target="[ScreenSaver.Visible]" />
+
+    </Rules>
+
+    <Content>
+      <ColorFill Content="Transparent" Padding="[Application.Config.OverScanPadding]" Scale="[Application.Config.OverScanScaling]" Layout="Form" TouchInteractive="true" MouseInteractive="true" >
+        <Animations>
+          <Animation Animation="animation://an:PageShow"/>
+          <Animation Animation="animation://an:PageHide"/>
+        </Animations>
+        <Children>
+          <ss:DefaultScreenSaver Name="ScreenSaver" Folder="[Application.CurrentFolderModel]" Application="[Application]" >
+            <LayoutInput>
+              <FormLayoutInput Left="Parent,0" Top="Parent,0" Bottom="Parent,1" Right="Parent,1"/>
+            </LayoutInput>
+
+
+          </ss:DefaultScreenSaver>
+
+          <!--Dummy item to have focus initially-->
+          <dum:Dummy Name="Dummy" >
+          <LayoutInput>
+            <FormLayoutInput Left="Parent,0,100"/>
+          </LayoutInput>
+            
+          </dum:Dummy>
+
+          <!--Message slide out-->
+          <mpo:MessagePopout Name="MessagePopout" Application="[Application]" Heading="[Application.MessageTitle]" Message="[Application.MessageText]" Visible="false" MaximumSize="450,450" >
+            <LayoutInput>
+              <FormLayoutInput Right="Parent,1" Top="Parent,.3"/>
+            </LayoutInput>
+
+            <Animations>
+              <Animation Animation="animation://an:NewItemShow"/>
+              <Animation Animation="animation://an:PageHide"/>
+            </Animations>
+          </mpo:MessagePopout>
+
+          <!--New Item slide out-->
+          <po:SmallItemPopout Name="NewItemPopout" Application="[Application]" Item="[Application.NewItem]" Visible="false" MaximumSize="0,250" >
+          <LayoutInput>
+            <FormLayoutInput Right="Parent,1" Top="Parent,.8"/>
+          </LayoutInput>
+              
+            <Animations>
+              <Animation Animation="animation://an:NewItemShow"/>
+              <Animation Animation="animation://an:PageHide"/>
+            </Animations>
+          </po:SmallItemPopout>
+          
+          <!--MessageBox-->
+          <msg:MessageBox Name="MessageBox" Msg="Testing" Visible="false" Close="[CloseMessage]" Application="[Application]" MinimumSize="0,400" MaximumSize="0,400" >
+            <LayoutInput>
+              <FormLayoutInput Left="Parent,0" Right="Parent,1"/>
+            </LayoutInput>
+            <Animations>
+              <Animation Type="Show" >
+                <Keyframes>
+                  <AlphaKeyframe Time="0.0" Value="0" />
+                  <AlphaKeyframe Time=".7" Value="1" Interpolation="EaseOut" />
+                </Keyframes>
+              </Animation>
+              <Animation Type="Hide" >
+                <Keyframes>
+                  <AlphaKeyframe Time="0.0" Value="1" />
+                  <AlphaKeyframe Time="0.2" Value="0" Interpolation="SCurve" />
+                </Keyframes>
+              </Animation>
+            </Animations>
+          </msg:MessageBox>
+
+          <Panel Name="MouseBlocker" MouseInteractive="true" Layout="Fill" Visible="false" />
+
+          <Panel Name="TopPanel" Layout="Form" Visible="false" >
+            <LayoutInput>
+              <FormLayoutInput Top="Parent, 0"/>
+            </LayoutInput>
+            <Animations>
+              <Animation Type="Show" >
+                <Keyframes>
+                  <AlphaKeyframe Time="0.0" Value="0" />
+                  <AlphaKeyframe Time="0.4" Value="1" Interpolation="SCurve" />
+                  <PositionKeyframe Time="0.0" Value="0,-50,0" />
+                  <PositionKeyframe Time="0.4" Value="0,0,0" Interpolation="SCurve" />
+                </Keyframes>
+              </Animation>
+              <Animation Animation="animation://an:PageHide"/>
+            </Animations>
+            <Children>
+              <Graphic Name="LogoImage" MaximumSize="300,0" MaintainAspectRatio="true" Margins="0,20,20,0" >
+                <LayoutInput>
+                  <FormLayoutInput Horizontal="Far" Vertical="Near"/>
+                </LayoutInput>
+              </Graphic>
+            </Children>
+            
+          </Panel>
+
+          <Panel Name="BottomPanel" Layout="Form" >
+            <LayoutInput>
+              <FormLayoutInput Bottom="Parent, 1"/>
+            </LayoutInput>
+            <Animations>
+              <Animation Type="Show" >
+                <Keyframes>
+                  <AlphaKeyframe Time="0.0" Value="0" />
+                  <AlphaKeyframe Time="0.4" Value="1" Interpolation="SCurve" />
+                  <PositionKeyframe Time="0.0" Value="0,150,0" />
+                  <PositionKeyframe Time="0.4" Value="0,0,0" Interpolation="SCurve" />
+                </Keyframes>
+              </Animation>
+              <Animation Animation="animation://an:PageHide"/>
+            </Animations>
+            <Children>
+
+              <Graphic Name="PosterImage" MaximumSize="200,0" MaintainAspectRatio="true" >
+                <LayoutInput>
+                  <FormLayoutInput Left="Parent, 0, 40" Top="Backing, 0, -60"/>
+                </LayoutInput>
+              </Graphic>
+              
+              <!--Overview-->
+              <Panel Name="OverviewPanel" Layout="Form" Visible="false" >
+                <LayoutInput>
+                  <FormLayoutInput Bottom="Backing, 0"/>
+                </LayoutInput>
+                <Animations>
+                  <Animation Type="Show" >
+                    <Keyframes>
+                      <AlphaKeyframe Time="0.0" Value="0" />
+                      <AlphaKeyframe Time="0.4" Value="1" Interpolation="SCurve" />
+                      <PositionKeyframe Time="0.0" Value="0,150,0" />
+                      <PositionKeyframe Time="0.4" Value="0,0,0" Interpolation="SCurve" />
+                    </Keyframes>
+                  </Animation>
+                  <Animation Animation="animation://an:PageHide"/>
+                </Animations>
+                <Children>
+                  <Text Name="Overview" Font="Segoe Media Center Light, 16, Bold" Color="White" WordWrap="true" Margins="250,5,20,10" >
+                    <LayoutInput>
+                      <FormLayoutInput Top="OvBacking, 0" Bottom="Parent, 1"/>
+                    </LayoutInput>
+                    
+                  </Text>
+                  <ColorFill Name="OvBacking" Content="Black" Alpha=".45" MaximumSize="0,200" MinimumSize="0,200" >
+                    <LayoutInput>
+                      <FormLayoutInput Bottom="Parent, 1" Horizontal="Fill"/>
+                    </LayoutInput>
+                  </ColorFill>
+
+                </Children>
+              </Panel>
+
+              <!--Chapter Info-->
+              <me:ChapterItem Name="ChapterInfo" Chapter="[Item.CurrentDisplayChapter]" >
+                <LayoutInput>
+                  <FormLayoutInput Right="Parent, 1, -20" Bottom="Backing, 0, -10"/>
+                </LayoutInput>
+              </me:ChapterItem>
+
+              <Text Name="Time" Font="Century Gothic, 18" Color="White" Alpha=".9" >
+                <LayoutInput>
+                  <FormLayoutInput Right="Parent, 1, -20" Top="Backing, 0, 10"/>
+                </LayoutInput>
+              </Text>
+
+              <Panel Name="EndTimePanel" Layout="HorizontalFlow" >
+                <LayoutInput>
+                  <FormLayoutInput Right="Parent, 1, -20" Top="Time, 1"/>
+                </LayoutInput>
+                <Children>
+                  <Text Content="[Application.LocalStrings.#EndsStr!cor:String]" Font="Century Gothic, 16" Color="White" Alpha=".5" />
+                  <Text Name="EndTime" Font="Century Gothic, 18" Color="White" Alpha=".5" Margins="4,0,0,0" />
+                </Children>
+              </Panel>
+
+              <Text  Name="Title" Margins="0,2,0,-3" Content="[Item.LongName]" Font="Segoe UI Light, 24, bold" Color="White" Alpha=".9" >
+                <LayoutInput>
+                  <FormLayoutInput Left="PosterImage, 1, 10" Top="Backing, 0" Right="Time, 0, -10"/>
+                </LayoutInput>
+              </Text>
+              <Panel Name="InfoPanel" Layout="HorizontalFlow" Margins="5,0,0,0">
+                <LayoutInput>
+                  <FormLayoutInput Left="PosterImage, 1, 10" Top="Title, 1"/>
+                </LayoutInput>
+                <Children>
+                  <sr:StarRating Margins="0,6,10,0" MaximumSize="0,20" Name="StarRating" ></sr:StarRating>
+                  <Graphic Name="RTIcon" Margins="0,6,0,0" MaintainAspectRatio="true" MaximumSize="0,20" />
+                  <Text Name="CriticScore" Font="Segoe UI Light, 14, bold" Color="White" Margins="2,2,10,0" />
+                  <Text Name="Year" Font="Segoe UI Light, 16, bold" Color="White" Margins="0,0,10,0" />
+                  <Text Name="Runtime" Font="Segoe UI Light, 16, bold" Color="White" Margins="0,0,10,0" />
+                  <mp:MPAARating Name="MPAARating" MaximumSize="0,21" Margins="0,6,12,0" />
+                  <Graphic Name="HDType" Margins="0,7,0,0" Content="image://i:Icon1080" MaximumSize="0,20" MaintainAspectRatio="true" Visible="false"/>
+                </Children>
+
+              </Panel>
+
+              <!-- Direct Seek -->
+              <Panel Name="DirectSkipPanel" Layout="HorizontalFlow" Visible="false" >
+                <Layout>
+                  <FlowLayout Orientation="Horizontal" ItemAlignment="Center" />
+                </Layout>
+                <LayoutInput>
+                  <FormLayoutInput Bottom="SeekBar,1, 13" Right="SeekBar, .7"/>
+                </LayoutInput>
+                <Children>
+                  <Text Name="DirectSkip" Font="Segoe Media Center Light, 20, Bold" Content="" Color="220,250,220" Margins="4,0,10,0"  />
+                  <Text Content="[Application.LocalStrings.#DirectSkipString!cor:String]" Color="220,220,250" Font="Segoe Media Center Light, 16, Bold" Margins="4,0,0,0" />
+                </Children>
+              </Panel>
+
+              <sb:SeekBar Name="SeekBar" Application="[Application]" Item="[Item]" Layout="Scale" Margins="20,20,20,20" >
+                <LayoutInput>
+                  <FormLayoutInput Left="PosterImage, 1, 10" Top="Backing, 0,73" Right="Parent, 1"/>
+                </LayoutInput>
+              </sb:SeekBar>
+
+              <ib:IconButton Name="Info" Command="[ShowInfo]" Application="[Application]"
+                              IconImage="resx://MediaBrowser/MediaBrowser.Resources/IconInfo" Size="20,20"
+                              Margins="5,5,0,0" >
+                    
+                <LayoutInput>
+                  <FormLayoutInput Left="PosterImage, 1, 30" Top="Parent,1, -45"/>
+                </LayoutInput>
+              </ib:IconButton>
+              
+              <me:ZoomBar Name="ZoomBar" Application="[Application]" >
+                <LayoutInput>
+                  <FormLayoutInput Left="Info, 1, 15" Top="Parent,1, -45"/>
+                </LayoutInput>
+              </me:ZoomBar>
+
+              <Panel Name="MultiInfo" Layout="HorizontalFlow" Alpha=".7" Margins="20,0,0,0" >
+                <LayoutInput>
+                  <FormLayoutInput Horizontal="Center" Top="Parent,1, -42" />
+                </LayoutInput>
+                <Children>
+                  <Text Name="MultiCurrent"  Color="220,220,250" Font="Segoe Media Center Light, 14, Bold" />
+                  <Text Content=" of " Color="220,220,250" Font="Segoe Media Center Light, 14, Bold" />
+                  <Text Name="MultiTotal"  Color="220,220,250" Font="Segoe Media Center Light, 14, Bold" />
+                  <ib:IconButton Name="MultiNext" Command="[NextInQueue]" Application="[Application]"
+                                  IconImage="resx://MediaBrowser/MediaBrowser.Resources/IconNext" Size="25,25"
+                                  Margins="5,0,0,0" />
+                </Children>
+              </Panel>
+
+              <Panel Name="Studios" Layout="HorizontalFlow" Padding="0,0,0,0" Margins="20,20,20,15" Alpha=".6">
+                <LayoutInput>
+                  <FormLayoutInput Vertical="Far" Horizontal="Far"/>
+                </LayoutInput>
+                <Layout>
+                  <FlowLayout ItemAlignment="Center" Orientation="Vertical"/>
+                </Layout>
+                <Children>
+
+                  <Panel Name="Studio" MaximumSize="0,40" Layout="Scale" >
+                    <Children>
+                      <Repeater Name="StudioRepeater" Source="[Item.StudioItems]">
+                        <Layout>
+                          <FlowLayout Orientation="Horizontal" ItemAlignment="Center" Spacing="10,10" />
+                        </Layout>
+                        <Content>
+                          <si:Studio StudioItem="[RepeatedItem!lib:StudioItemWrapper]" Name="StudioLogo"/>
+                        </Content>
+                      </Repeater>
+                    </Children>
+                  </Panel>
+
+                </Children>
+              </Panel>
+              <ColorFill Name="Backing" Content="Black" Alpha=".65" MaximumSize="0,200" MinimumSize="0,200" >
+                <LayoutInput>
+                  <FormLayoutInput Bottom="Parent, 1" Horizontal="Fill"/>
+                </LayoutInput>
+              </ColorFill>
+            </Children>
+          </Panel>
+
+          <Panel Name="PausedPanel" Visible="false" Layout="Center" >
+            <Children>
+              <Graphic Content="resx://MediaBrowser/MediaBrowser.Resources/IconPaused" MaximumSize="256,256" MinimumSize="256,256" Margins="0,0,0,100" Alpha=".35" />
+              <ColorFill Content="Black" Alpha=".6" Layout="Fill" />
+            </Children>
+          </Panel>
+          
+          <Video Name="MainVideo" Layout="Fill"  Scale="[Application.PlaybackController.Zoom]" CenterPointPercent=".5,.5,.5" />
+          <ColorFill Name="Background" Content="Black" Layout="Fill" />
+
+
+        </Children>
+      </ColorFill>
+
+    </Content>
+
+  </UI>
+
+  <UI Name="ZoomBar" >
+    <Properties>
+      <a:Application Name="Application" Application="$Required" />
+    </Properties>
+
+    <Locals>
+      <Command Name="NormalZoom"/>
+      <Command Name="HStretch"/>
+      <Command Name="VStretch"/>
+      <Command Name="FullZoom"/>
+      <EditableText Name="ToolText"/>
+
+    </Locals>
+
+    <Rules>
+      <Condition Source="[Input.DeepKeyFocus]" SourceValue="false" Target="[ToolTip.Content]" Value="" />
+      <Binding Source="[ToolText.Value]" Target="[ToolTip.Content]" />
+
+      <Changed Source="[NormalZoom.Invoked]" >
+        <Actions>
+          <Set Target="[Application.PlaybackController.ZoomMode]" Value="0" />
+        </Actions>
+      </Changed>
+      <Changed Source="[HStretch.Invoked]" >
+        <Actions>
+          <Set Target="[Application.PlaybackController.ZoomMode]" Value="1" />
+        </Actions>
+      </Changed>
+      <Changed Source="[VStretch.Invoked]" >
+        <Actions>
+          <Set Target="[Application.PlaybackController.ZoomMode]" Value="2" />
+        </Actions>
+      </Changed>
+      <Changed Source="[FullZoom.Invoked]" >
+        <Actions>
+          <Set Target="[Application.PlaybackController.ZoomMode]" Value="3" />
+        </Actions>
+      </Changed>
+
+      <Binding Source="[Application.PlaybackController.IsFullZoom]" Target="[FullButton.Selected]" />
+      <Binding Source="[Application.PlaybackController.IsNormalZoom]" Target="[NormalButton.Selected]" />
+      <Binding Source="[Application.PlaybackController.IsHorizontalStretch]" Target="[HorizontalButton.Selected]" />
+      <Binding Source="[Application.PlaybackController.IsVerticalStretch]" Target="[VerticalButton.Selected]" />
+
+    </Rules>
+
+    <Content>
+      <Panel Name="ZoomPanel" Padding="5,5,5,5" Navigation="PreferFocusOrder" >
+        <Layout>
+          <FlowLayout Orientation="Horizontal" ItemAlignment="Center"/>
+        </Layout>
+        <Children>
+          <Text Font="Segoe Media Center Light, 12, Bold" Content="[Application.LocalStrings.#ZoomMode!cor:String]" Color="200,200,200" Margins="0,0,10,0" />
+          <Panel >
+            <Layout>
+              <FlowLayout Orientation="Horizontal" ItemAlignment="Center" Spacing="4,4"/>
+            </Layout>
+            <Children>
+              <ib:IconButton Name="NormalButton" Application="[Application]"
+                                DescriptionField="[ToolText]" DescriptionText="[Application.LocalStrings.#NZoom!cor:String]"
+                                Selected="[Application.PlaybackController.IsNormalZoom]" IconImage="image://i:NZoom" Command="[NormalZoom]" Size="34,0" />
+              <ib:IconButton Name="HorizontalButton" Application="[Application]"
+                                DescriptionField="[ToolText]" DescriptionText="[Application.LocalStrings.#HStretch!cor:String]"
+                                Selected="[Application.PlaybackController.IsHorizontalStretch]" IconImage="image://i:HStretch" Command="[HStretch]" Size="34,0" />
+              <ib:IconButton Name="VerticalButton" Application="[Application]"
+                                DescriptionField="[ToolText]" DescriptionText="[Application.LocalStrings.#VStretch!cor:String]"
+                                Selected="[Application.PlaybackController.IsVerticalStretch]" IconImage="image://i:VStretch" Command="[VStretch]" Size="34,0" />
+              <ib:IconButton Name="FullButton" Application="[Application]"
+                                DescriptionField="[ToolText]" DescriptionText="[Application.LocalStrings.#FZoom!cor:String]"
+                                Selected="[Application.PlaybackController.IsFullZoom]" IconImage="image://i:FZoom" Command="[FullZoom]" Size="34,0" />
+            </Children>
+          </Panel>
+          <Text Name="ToolTip" Font="Segoe Media Center Light, 12, Bold" Color="200,200,200" Margins="10,0,0,0" />
+        </Children>
+      </Panel>
+
+    </Content>
+  </UI>
+  
+  <UI Name="ChapterItem" >
+    <Properties>
+      <lib:ChapterItem Name="Chapter" ChapterItem="$Required" />
+    </Properties>
+
+    <Rules>
+      <Binding Source="[Chapter.Position]" Target="[ChapterPos.Content]" />
+      <Binding Source="[Chapter.Name]" Target="[ChapterName.Content]" />
+      <Binding Source="[Chapter.PrimaryImage]" Target="[ChapterImage.Content]" />
+
+    </Rules>
+
+    <Content>
+      <ColorFill Name="ChapterInfo" Content="Black" Padding="5,5,5,5" >
+        <Layout>
+          <FlowLayout Orientation="Vertical" ItemAlignment="Near"/>
+        </Layout>
+        <Children>
+          <ColorFill Content="100,250,250,250" Padding="3,3,3,3" >
+            <Children>
+              <Text Name="ChapterPos" Font="Segoe UI Light, 16, bold" Color="White" Margins="3,0,3,0" />
+              <Graphic Name="ChapterImage" SizingPolicy="SizeToConstraint" MaximumSize="300,150" MaintainAspectRatio="true"/>
+            </Children>
+          </ColorFill>
+          <Panel Margins="0,0,0,0"  >
+            <Layout>
+              <FlowLayout Orientation="Vertical" ItemAlignment="Near"/>
+            </Layout>
+            <Children>
+              <Text Name="ChapterName" Font="Segoe UI Light, 16, bold" Color="White" />
+            </Children>
+          </Panel>
+        </Children>
+      </ColorFill>
+    </Content>
+  </UI>
+
+
+
+</Mcml>

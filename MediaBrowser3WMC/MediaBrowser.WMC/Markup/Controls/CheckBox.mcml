@@ -1,0 +1,150 @@
+<Mcml xmlns="http://schemas.microsoft.com/2006/mcml"
+      xmlns:cor ="assembly://MsCorLib/System"
+      xmlns:i="resx://MediaBrowser/MediaBrowser.Resources/Images"
+      xmlns:s="file://Styles_DoNotEdit.mcml"
+      xmlns:me="Me"
+      xmlns:sounds="resx://MediaBrowser/MediaBrowser.Resources/Sounds"
+	  >
+
+	<UI Name="CBTest">
+		<Locals>
+			<BooleanChoice Name="Bool" Value="true" />
+		</Locals>
+		<Content>
+			<me:CheckBox Checked="[Bool]" Label="Check Test" Font="Courier,12"/>
+		</Content>
+	</UI>
+
+	<UI Name="CheckBox">
+
+		<Properties>
+			<BooleanChoice Name="Checked" BooleanChoice="$Required" />
+			<cor:String Name="Label" String="$Required" />
+			<Font Name="Font" Font="$Required"/>
+      <EditableText Name="FocusItem" />
+      <Color Name="Color" Color="color://s:FontColorMedium" />
+		</Properties>
+
+		<Locals>
+			<ClickHandler Name="Clicker" />
+		</Locals>
+
+		<Rules>
+
+			<Default Target="[Input.KeyInteractive]" Value="true" />
+			<Binding Source="[Label]" Target="[Lbl.Content]"/>
+
+			<Changed Source="[Clicker.Invoked]">
+				<Actions>
+					<Set Target="[Checked.Value]" Value="[Checked.Value]">
+						<Transformer>
+							<BooleanTransformer Inverse="true"/>
+						</Transformer>
+					</Set>
+					<PlaySound Sound="sound://sounds:Miniselect" />
+				</Actions>
+			</Changed>
+
+			<Changed Source="[Checked.Value]">
+				<Conditions>
+					<Equality Source="[Checked.Value]" Value="true" />
+				</Conditions>
+				<Actions>
+					<Set Target="[BoxImage.Content]" Value="image://i:CheckBoxCheckedFocus" />
+				</Actions>
+			</Changed>
+
+			<Condition Source="[Clicker.Clicking]" SourceValue="true">
+				<Conditions>
+					<Equality Source="[Checked.Value]" Value="false" />
+				</Conditions>
+				<Actions>
+					<Set Target="[BoxImage.Content]" Value="image://i:CheckBoxCheckedFocus" />
+				</Actions>
+			</Condition>
+
+			<Condition Source="[Clicker.Clicking]" SourceValue="true">
+				<Conditions>
+					<Equality Source="[Checked.Value]" Value="false" />
+				</Conditions>
+				<Actions>
+					<Set Target="[BoxImage.Content]" Value="image://i:CheckBoxUncheckedFocus" />
+				</Actions>
+			</Condition>
+
+      <Condition Source="[Input.KeyFocus]" SourceValue="true">
+        <Actions>
+          <Set Target="[FocusItem.Value]" Value="[Label]" />
+        </Actions>
+      </Condition>
+
+			<Condition Source="[Input.KeyFocus]" SourceValue="true">
+				<Conditions>
+					<Equality Source="[Checked.Value]" Value="true" />
+				</Conditions>
+				<Actions>
+					<Set Target="[BoxImage.Content]" Value="image://i:CheckBoxCheckedFocus" />
+				</Actions>
+			</Condition>
+
+			<Condition Source="[Input.KeyFocus]" SourceValue="true">
+				<Conditions>
+					<Equality Source="[Checked.Value]" Value="false" />
+				</Conditions>
+				<Actions>
+					<Set Target="[BoxImage.Content]" Value="image://i:CheckBoxUncheckedFocus" />
+				</Actions>
+			</Condition>
+
+			<Condition Source="[Input.KeyFocus]" SourceValue="false">
+				<Conditions>
+					<Equality Source="[Checked.Value]" Value="true" />
+				</Conditions>
+				<Actions>
+					<Set Target="[BoxImage.Content]" Value="image://i:CheckBoxCheckedNoFocus" />
+				</Actions>
+			</Condition>
+
+			<Condition Source="[Input.KeyFocus]" SourceValue="false">
+				<Conditions>
+					<Equality Source="[Checked.Value]" Value="false" />
+				</Conditions>
+				<Actions>
+					<Set Target="[BoxImage.Content]" Value="image://i:CheckBoxUncheckedNoFocus" />
+				</Actions>
+			</Condition>
+
+      <Binding Source="[Input.KeyFocus]" Target="[Underline.Visible]" />
+
+		</Rules>
+
+		<Content>
+			<Panel Layout="HorizontalFlow">
+				<Children>
+					<Graphic Name="BoxImage" Content="image://i:CheckBoxUncheckedNoFocus" MaximumSize="34,34" ColorFilter="[Color]"/>
+          <Panel Layout="Anchor" MaximumSize="0,34"  Margins="5,0,0,0" >
+            <Children>
+              <Text Name="Lbl" Color="[Color]" Font="[Font]" >
+                <LayoutInput>
+                  <AnchorLayoutInput Vertical="Near" Horizontal="Near"/>
+                </LayoutInput>
+              </Text>
+              <Clip FadeAmount=".7" FadeSize="10" Layout="Form">
+                <LayoutInput>
+                  <AnchorLayoutInput Top="Lbl,1" Left="Lbl,0" Right="Lbl,1" Bottom="Lbl,1,2" ContributesToHeight="false"/>
+                </LayoutInput>
+                <Children>
+                  <ColorFill Name="Underline" Visible="false" Content="[Color]" Layout="Fill" />
+                </Children>
+              </Clip>
+
+            </Children>
+          </Panel>
+				</Children>
+			</Panel>
+		</Content>
+
+	</UI>
+
+
+</Mcml>

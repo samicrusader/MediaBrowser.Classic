@@ -1,0 +1,16 @@
+<application 
+  id="{4EC70CB4-5070-492F-90E0-EA0D290FB63B}"
+  Title="Jellyfin" 
+  CompanyName="samicrusader"
+  StartMenuStripTitle="Jellyfin"
+  StartMenuStripCategory="Custom Start Menu\Jellyfin">
+
+  <entrypoint id="{AF7F9BF3-06F1-46BC-B3B6-98624018966E}"
+       addin="MediaBrowser.MyAddIn, MediaBrowser,Culture=Neutral,Version=3.0.317.0,PublicKeyToken=59fc04479785fd64"
+       title="Jellyfin"
+       description="The Free Software Media System"
+       imageUrl=".\Application.png"
+       inactiveImageURL=".\ApplicationInactive.png">
+    <category category="Custom Start Menu\Jellyfin" order="0"/>
+  </entrypoint>
+</application>

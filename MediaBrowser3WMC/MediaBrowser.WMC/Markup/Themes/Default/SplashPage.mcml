@@ -1,0 +1,36 @@
+<Mcml xmlns="http://schemas.microsoft.com/2006/mcml"
+      xmlns:cor="assembly://MsCorLib/System"
+	  xmlns:a="assembly://MediaBrowser/MediaBrowser"
+	  xmlns:i="resx://MediaBrowser/MediaBrowser.Resources/Images"
+      xmlns:spl="resx://MediaBrowser/MediaBrowser.Resources/Splash"
+    xmlns:me="Me"
+      >
+
+
+  <UI Name="SplashPage"> 
+    <Properties>
+      <a:Application Name="Application" Application="$Required"/>
+
+    </Properties>
+
+    <Rules>
+      <!--if not called by us (user used "back" to get to us) exit immediately-->
+      <Condition Source="[Application.NavigatingForward]" SourceValue="false">
+        <Actions>
+          <Invoke Target="[Application.BackOut]" />
+        </Actions>
+      </Condition>
+    </Rules>
+
+    <Content>
+      <Clip Layout="Form" Padding="[Application.Config.OverScanPadding]" Scale="[Application.Config.OverScanScaling]" CenterPointPercent="0.5,0.5,0.5">
+        <Children>
+          <spl:Splash Application="[Application]" />
+        </Children>
+      </Clip>
+    </Content>
+  </UI>
+
+
+
+</Mcml>
